@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notion Progress Widget</title>
+
+<style>
+  body {
+    margin: 0;
+    padding: 12px;
+    font-family: system-ui, sans-serif;
+    background: transparent;
+  }
+
+  .container {
+    width: 100%;
+  }
+
+  .bar-bg {
+    width: 100%;
+    height: 18px;
+    background: #e5e5e5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .bar {
+    height: 100%;
+    width: 0%;
+    background: #4f46e5;
+    transition: width 0.2s ease;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  button {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+  }
+
+  .percent {
+    margin-left: auto;
+    font-size: 12px;
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div class="bar-bg">
+    <div id="bar" class="bar"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="change(-5)">–</button>
+    <button onclick="change(5)">+</button>
+    <button onclick="resetBar()">Reset</button>
+    <div id="percent" class="percent">0%</div>
+  </div>
+</div>
+
+<script>
+  const STEP = 5;
+  const KEY = "notion-progress";
+
+  let value = Number(localStorage.getItem(KEY)) || 0;
+
+  function render() {
+    value = Math.max(0, Math.min(100, value));
+    document.getElementById("bar").style.width = value + "%";
+    document.getElementById("percent").textContent = value + "%";
+    localStorage.setItem(KEY, value);
+  }
+
+  function change(delta) {
+    value += delta;
+    render();
+  }
+
+  function resetBar() {
+    value = 0;
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>
