@@ -35,8 +35,9 @@
 
   .controls {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
+    margin-top: 6px;
   }
 
   button {
@@ -45,6 +46,14 @@
     border: 1px solid #ccc;
     background: white;
     cursor: pointer;
+  }
+
+  input {
+    width: 70px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 12px;
   }
 
   .percent {
@@ -63,21 +72,30 @@
   <div class="controls">
     <button onclick="change(-5)">–</button>
     <button onclick="change(5)">+</button>
+
+    <input id="fraction" placeholder="14/24" />
+
+    <button onclick="applyFraction()">Set</button>
     <button onclick="resetBar()">Reset</button>
+
     <div id="percent" class="percent">0%</div>
   </div>
 </div>
 
 <script>
-  const STEP = 5;
   const KEY = "notion-progress";
+  const FRACTION_KEY = "notion-fraction";
 
   let value = Number(localStorage.getItem(KEY)) || 0;
+  let fraction = localStorage.getItem(FRACTION_KEY) || "";
+
+  const fractionInput = document.getElementById("fraction");
+  fractionInput.value = fraction;
 
   function render() {
     value = Math.max(0, Math.min(100, value));
     document.getElementById("bar").style.width = value + "%";
-    document.getElementById("percent").textContent = value + "%";
+    document.getElementById("percent").textContent = Math.round(value) + "%";
     localStorage.setItem(KEY, value);
   }
 
@@ -86,8 +104,26 @@
     render();
   }
 
+  function applyFraction() {
+    const text = fractionInput.value;
+    const parts = text.split("/");
+
+    if (parts.length !== 2) return;
+
+    const a = parseFloat(parts[0]);
+    const b = parseFloat(parts[1]);
+
+    if (isNaN(a) || isNaN(b) || b === 0) return;
+
+    value = (a / b) * 100;
+    localStorage.setItem(FRACTION_KEY, text);
+    render();
+  }
+
   function resetBar() {
     value = 0;
+    fractionInput.value = "";
+    localStorage.removeItem(FRACTION_KEY);
     render();
   }
 
